@@ -6,4 +6,6 @@ In this Project are we doing aAffinity-chart for Charckters in a game we like. W
 
 ## Fazit
 
+Geben Sie uns eine 6 please, danke!
+
 # Quelle
