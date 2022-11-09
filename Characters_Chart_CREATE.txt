@@ -68,15 +68,16 @@ CREATE
 (:Role {name: 'Attacker'}),
 (:Role {name: 'Defender'}),
 (:Role {name: 'Healer'});
+(:Role {name: 'Queen'});
 
 MATCH
-(attack:Role), (defend:Role), (heal:Role)
+(attack:Role), (defend:Role), (heal:Role), (queen:Role)
 
 WHERE
-attack.name = 'Attacker' AND defend.name = 'Defender' AND heal.name = 'Healer'
+attack.name = 'Attacker' AND defend.name = 'Defender' AND heal.name = 'Healer' AND queen.name = 'Queen'
 
 RETURN
-attack.name, defend.name, heal.name;
+attack.name, defend.name, heal.name, queen.name;
 
 -----------------------------------------------------------------------------------------------------------------
 
@@ -129,3 +130,65 @@ WHERE
 queenN.name = 'Queen Nia' AND agnus.name = 'Agnus'
 CREATE
 (queenN)-[function: rules_over]->(agnus);
+
+-----------------------------------------------------------------------------------------------------------------
+
+// Relationships: Character -> ... -> Role
+
+MATCH
+(noah:Character), (attack:Role)
+WHERE
+noah.name = 'Noah' AND attack.name = 'Attacker'
+CREATE
+(noah)-[r: is]->(attack);
+
+MATCH
+(lanz:Character), (defend:Role)
+WHERE
+lanz.name = 'Lanz' AND defend.name = 'Defender'
+CREATE
+(lanz)-[r: is]->(defend);
+
+MATCH
+(eunie:Character), (heal:Role)
+WHERE
+eunie.name = 'Eunie' AND heal.name = 'Healer'
+CREATE
+(eunie)-[r: is]->(heal);
+
+MATCH
+(mio:Character), (attack:Role)
+WHERE
+mio.name = 'Mio' AND attack.name = 'Attacker'
+CREATE
+(mio)-[r: is]->(attack);
+
+MATCH
+(sena:Character), (defend:Role)
+WHERE
+sena.name = 'Sena' AND defend.name = 'Defender'
+CREATE
+(sena)-[r: is]->(defend);
+
+MATCH
+(taion:Character), (heal:Role)
+WHERE
+taion.name = 'Taion' AND heal.name = 'Healer'
+CREATE
+(taion)-[r: is]->(heal);
+
+MATCH
+(queenM:Character), (queen:Role)
+WHERE
+queenM.name = 'Queen Melia' AND queen.name = 'Queen'
+CREATE
+(queenM)-[r: is]->(queen);
+
+MATCH
+(queenN:Character), (queen:Role)
+WHERE
+queenN.name = 'Queen Nia' AND queen.name = 'Queen'
+CREATE
+(queenN)-[r: is]->(queen);
+
+MATCH (n) OPTIONAL MATCH (n)-[r]-(m) RETURN n, r, m;
