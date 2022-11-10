@@ -16,7 +16,8 @@ It was Confusing at first but it made more senes to more i worked with it.
 
 Tim:
 
-Lorem ispus
+I liked it way better than mongoDB and I'm kind of dissapointed that we didn't work more on neo4j / graph databases.
+
 
 # Quelle
 
