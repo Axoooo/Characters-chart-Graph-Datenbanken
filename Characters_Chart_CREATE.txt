@@ -7,38 +7,12 @@ password: 1234
 
 -----------------------------------------------------------------------------------------------------
 
-MATCH (n) RETURN (n);
-MATCH (n) OPTIONAL MATCH (n)-[r]-() RETURN n, r;
-MATCH (n) OPTIONAL MATCH (n)-[r]-(m) RETURN n, r, m;
+Creation
 
-MATCH (n) OPTIONAL MATCH (n)-[r]-(m)
-DELETE n, r, m;
-
------------------------------------------------------------------------------------------------------
-// Nation
-
-MATCH (keves), (agnus)
-DELETE keves, agnus;
 
 CREATE
 (:Nation {name: 'Keves'}),
-(:Nation {name: 'Agnus'});
-
-MATCH (keves:Nation),(agnus:Nation)
-WHERE keves.name = 'Keves' AND agnus.name = 'Agnus'
-RETURN keves.name, agnus.name;
-
-
------------------------------------------------------------------------------------------------------
-// Characters
-
-MATCH
-(queenM), (noah), (lanz), (eunie),
-(queenN), (mio), (sena), (taion)
-DELETE queenM, noah, lanz, eunie, queenN, mio, sena, taion;
-
-
-CREATE
+(:Nation {name: 'Agnus'}),
 (:Character {name: 'Queen Melia'}),
 (:Character {name: 'Noah'}),
 (:Character {name: 'Lanz'}),
@@ -46,38 +20,89 @@ CREATE
 (:Character {name: 'Queen Nia'}),
 (:Character {name: 'Mio'}),
 (:Character {name: 'Sena'}),
-(:Character {name: 'Taion'});
+(:Character {name: 'Taion'}),
+(:Role {name: 'Attacker'}),
+(:Role {name: 'Defender'}),
+(:Role {name: 'Healer'});
 
+-----------------------------------------------------------------------------------------------------
+
+Creation Relationships
+
+
+MATCH
+(noah:Character), (mio:Character)
+WHERE
+noah.name = 'Noah' AND mio.name = 'Mio'
+CREATE
+(noah)-[r: has_interlink_with]->(mio);
+
+MATCH
+(lanz:Character), (sena:Character)
+WHERE
+lanz.name = 'Lanz' AND sena.name = 'Sena'
+CREATE
+(lanz)-[r: has_interlink_with]->(sena);
+
+MATCH
+(eunie:Character), (taion:Character)
+WHERE
+eunie.name = 'Eunie' AND taion.name = 'Taion'
+CREATE
+(eunie)-[r: has_interlink_with]->(taion);
+
+MATCH
+(queenM:Character), (queenN:Character)
+WHERE
+queenM.name = 'Queen Melia' AND queenN.name = 'Queen Nia'
+CREATE
+(queenM)-[r: is_friends_with]->(queenN);
+
+-----------------------------------------------------------------------------------------------------
+
+// Nation
+
+MATCH (keves:Nation),(agnus:Nation)
+WHERE keves.name = 'Keves' AND agnus.name = 'Agnus'
+RETURN keves.name, agnus.name;
+
+
+
+MATCH (keves), (agnus)
+DELETE keves, agnus;
+
+-----------------------------------------------------------------------------------------------------
+
+// Characters
 
 MATCH
 (queenM:Character),(noah:Character), (lanz:Character), (eunie:Character),
 (queenN:Character),(mio:Character), (sena:Character), (taion:Character)
-
 WHERE
 queenM.name = 'Queen Melia' AND noah.name = 'Noah' AND lanz.name = 'Lanz' AND eunie.name = 'Eunie' AND
 queenN.name = 'Queen Nia' AND mio.name = 'Mio' AND sena.name = 'Sena' AND taion.name = 'Taion'
-
 RETURN
 queenM.name, noah.name, lanz.name, eunie.name,
 queenN.name, mio.name, sena.name, taion.name;
 
+
+
+MATCH
+(queenM), (noah), (lanz), (eunie),
+(queenN), (mio), (sena), (taion)
+DELETE queenM, noah, lanz, eunie, queenN, mio, sena, taion;
+
 -----------------------------------------------------------------------------------------------------
 // Role
 
-CREATE
-(:Role {name: 'Attacker'}),
-(:Role {name: 'Defender'}),
-(:Role {name: 'Healer'});
-(:Role {name: 'Queen'});
-
 MATCH
-(attack:Role), (defend:Role), (heal:Role), (queen:Role)
-
+(attack:Role), (defend:Role), (heal:Role)
 WHERE
-attack.name = 'Attacker' AND defend.name = 'Defender' AND heal.name = 'Healer' AND queen.name = 'Queen'
-
+attack.name = 'Attacker' AND
+defend.name = 'Defender' AND
+heal.name = 'Healer'
 RETURN
-attack.name, defend.name, heal.name, queen.name;
+attack.name, defend.name, heal.name;
 
 -----------------------------------------------------------------------------------------------------------------
 
@@ -111,25 +136,67 @@ queenM.name = 'Queen Melia' AND queenN.name = 'Queen Nia'
 CREATE
 (queenM)-[r: is_friends_with]->(queenN);
 
-MATCH (n) OPTIONAL MATCH (n)-[r]-(m) RETURN n, r, m;
-
 -----------------------------------------------------------------------------------------------------------------
 
 // Relationships: Character -> ... -> Nation
+
+MATCH
+(noah:Character), (keves:Nation)
+WHERE
+noah.name = 'Noah' AND keves.name = 'Keves'
+CREATE
+(noah)-[r: fights_for]->(keves);
+
+MATCH
+(lanz:Character), (keves:Nation)
+WHERE
+lanz.name = 'Lanz' AND keves.name = 'Keves'
+CREATE
+(lanz)-[r: fights_for]->(keves);
+
+MATCH
+(eunie:Character), (keves:Nation)
+WHERE
+eunie.name = 'Eunie' AND keves.name = 'Keves'
+CREATE
+(eunie)-[r: fights_for]->(keves);
+
+MATCH
+(mio:Character), (agnus:Nation)
+WHERE
+mio.name = 'Mio' AND agnus.name = 'Agnus'
+CREATE
+(mio)-[r: fights_for]->(agnus);
+
+MATCH
+(sena:Character), (agnus:Nation)
+WHERE
+sena.name = 'Sena' AND agnus.name = 'Agnus'
+CREATE
+(sena)-[r: fights_for]->(agnus);
+
+MATCH
+(taion:Character), (agnus:Nation)
+WHERE
+taion.name = 'Taion' AND agnus.name = 'Agnus'
+CREATE
+(taion)-[r: fights_for]->(agnus);
 
 MATCH
 (queenM:Character), (keves:Nation)
 WHERE
 queenM.name = 'Queen Melia' AND keves.name = 'Keves'
 CREATE
-(queenM)-[function: rules_over]->(keves);
+(queenM)-[r:rules_over]->(keves);
 
 MATCH
 (queenN:Character), (agnus:Nation)
 WHERE
 queenN.name = 'Queen Nia' AND agnus.name = 'Agnus'
 CREATE
-(queenN)-[function: rules_over]->(agnus);
+(queenN)-[r: rules_over]->(agnus);
+
+
 
 -----------------------------------------------------------------------------------------------------------------
 
@@ -157,16 +224,16 @@ CREATE
 (eunie)-[r: is]->(heal);
 
 MATCH
-(mio:Character), (attack:Role)
+(mio:Character), (attack:Role) (defend:Role)
 WHERE
-mio.name = 'Mio' AND attack.name = 'Attacker'
+mio.name = 'Mio' AND defend.name = 'Defender'
 CREATE
 (mio)-[r: is]->(attack);
 
 MATCH
 (sena:Character), (defend:Role)
 WHERE
-sena.name = 'Sena' AND defend.name = 'Defender'
+sena.name = 'Sena' AND attack.name = 'Attacker'
 CREATE
 (sena)-[r: is]->(defend);
 
@@ -178,17 +245,25 @@ CREATE
 (taion)-[r: is]->(heal);
 
 MATCH
-(queenM:Character), (queen:Role)
+(queenM:Character), (attack:Role)
 WHERE
-queenM.name = 'Queen Melia' AND queen.name = 'Queen'
+queenM.name = 'Queen Melia' AND attack.name = 'Attacker'
 CREATE
-(queenM)-[r: is]->(queen);
+(queenM)-[r: is]->(attack);
 
 MATCH
-(queenN:Character), (queen:Role)
+(queenN:Character), (heal:Role)
 WHERE
-queenN.name = 'Queen Nia' AND queen.name = 'Queen'
+queenN.name = 'Queen Nia' AND heal.name = 'Healer'
 CREATE
-(queenN)-[r: is]->(queen);
+(queenN)-[r: is]->(heal);
+-----------------------------------------------------------------------------------------------------------------
+// Gebt alle Nodes aus
+MATCH (n) RETURN (n);
 
-MATCH (n) OPTIONAL MATCH (n)-[r]-(m) RETURN n, r, m;
+// Gebt alle Nodes und ihre Beziehungen aus
+MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n, r, m;
+
+// Löscht alle Nodes und ihre Beziehungen (DELETEALL)
+MATCH (n) OPTIONAL MATCH (n)-[r]-(m)
+DELETE n, r, m;
