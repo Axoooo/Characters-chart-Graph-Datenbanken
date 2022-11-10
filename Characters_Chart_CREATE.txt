@@ -29,7 +29,7 @@ CREATE
 
 Creation Relationships
 
-
+q
 MATCH
 (noah:Character), (mio:Character)
 WHERE
@@ -258,12 +258,33 @@ queenN.name = 'Queen Nia' AND heal.name = 'Healer'
 CREATE
 (queenN)-[r: is]->(heal);
 -----------------------------------------------------------------------------------------------------------------
+// SZENARIO 1:
+// Suche nach eine Nation names "Keeves"
+// Suchen eine Nation mit dem Name Value "Keeves"
+
+// SZENARIO 2:
+// Suche nach einen aginien Healer
+// Suche nach Characters von der Nation Agnus und mit der Role "heal"
+
+// SZENARIO 3:
+// Suche nach einem Regieren Attacker
+// Suche nach Characters, die eine Nation regieren und hat auch die Attack Role haben.
+
+// SZENARIO 4:
+// Suche nach einem der Interlinked ist mit einem Defender
+//Suche nach Characters die Interlinked sind mit einem Character die eine Attack Defend haben
+
+// SZENARIO 5:
+// Suche nach einem der mit Jemand Interlinked ist, der Gleiche Role
+// Suche nach Characters die Interlinked sind mit Jemanden der die gleiche Rolle Hat.
+
+-----------------------------------------------------------------------------------------------------------------
 // Gebt alle Nodes aus
 MATCH (n) RETURN (n);
 
 // Gebt alle Nodes und ihre Beziehungen aus
 MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n, r, m;
 
-// Löscht alle Nodes und ihre Beziehungen (DELETEALL)
+// Löscht alle Nodes und ihre Beziehungen (DELETE_ALL)
 MATCH (n) OPTIONAL MATCH (n)-[r]-(m)
 DELETE n, r, m;
