@@ -1,0 +1,169 @@
+
+Neo4j Anmeldung
+
+cypher-shell
+username: neo4j
+password: 1234
+
+-----------------------------------------------------------------------------------------------------
+
+Creation
+
+
+CREATE
+(:Nation {name: 'Keves'}),
+(:Nation {name: 'Agnus'}),
+(:Character {name: 'Queen Melia'}),
+(:Character {name: 'Noah'}),
+(:Character {name: 'Lanz'}),
+(:Character {name: 'Eunie'}),
+(:Character {name: 'Queen Nia'}),
+(:Character {name: 'Mio'}),
+(:Character {name: 'Sena'}),
+(:Character {name: 'Taion'}),
+(:Role {name: 'Attacker'}),
+(:Role {name: 'Defender'}),
+(:Role {name: 'Healer'});
+
+-----------------------------------------------------------------------------------------------------
+
+Creation Relationships
+
+
+MATCH
+(noah:Character), (mio:Character)
+WHERE
+noah.name = 'Noah' AND mio.name = 'Mio'
+CREATE
+(noah)-[r: has_interlink_with]->(mio);
+
+MATCH
+(lanz:Character), (sena:Character)
+WHERE
+lanz.name = 'Lanz' AND sena.name = 'Sena'
+CREATE
+(lanz)-[r: has_interlink_with]->(sena);
+
+MATCH
+(eunie:Character), (taion:Character)
+WHERE
+eunie.name = 'Eunie' AND taion.name = 'Taion'
+CREATE
+(eunie)-[r: has_interlink_with]->(taion);
+
+MATCH
+(queenM:Character), (queenN:Character)
+WHERE
+queenM.name = 'Queen Melia' AND queenN.name = 'Queen Nia'
+CREATE
+(queenM)-[r: is_friends_with]->(queenN);
+
+-----------------------------------------------------------------------------------------------------
+
+// Nation
+
+MATCH (keves:Nation),(agnus:Nation)
+WHERE keves.name = 'Keves' AND agnus.name = 'Agnus'
+RETURN keves.name, agnus.name;
+
+
+
+MATCH (keves), (agnus)
+DELETE keves, agnus;
+
+-----------------------------------------------------------------------------------------------------
+
+// Characters
+
+MATCH
+(queenM:Character),(noah:Character), (lanz:Character), (eunie:Character),
+(queenN:Character),(mio:Character), (sena:Character), (taion:Character)
+WHERE
+queenM.name = 'Queen Melia' AND noah.name = 'Noah' AND lanz.name = 'Lanz' AND eunie.name = 'Eunie' AND
+queenN.name = 'Queen Nia' AND mio.name = 'Mio' AND sena.name = 'Sena' AND taion.name = 'Taion'
+RETURN
+queenM.name, noah.name, lanz.name, eunie.name,
+queenN.name, mio.name, sena.name, taion.name;
+
+
+
+MATCH
+(queenM), (noah), (lanz), (eunie),
+(queenN), (mio), (sena), (taion)
+DELETE queenM, noah, lanz, eunie, queenN, mio, sena, taion;
+
+-----------------------------------------------------------------------------------------------------
+// Role
+
+MATCH
+(attack:Role), (defend:Role), (heal:Role)
+WHERE
+attack.name = 'Attacker' AND
+defend.name = 'Defender' AND
+heal.name = 'Healer'
+RETURN
+attack.name, defend.name, heal.name;
+
+-----------------------------------------------------------------------------------------------------------------
+
+// Relationships: Character -> ... -> Character
+
+MATCH
+(noah:Character), (mio:Character)
+WHERE
+noah.name = 'Noah' AND mio.name = 'Mio'
+CREATE
+(noah)-[r: has_interlink_with]->(mio);
+
+MATCH
+(lanz:Character), (sena:Character)
+WHERE
+lanz.name = 'Lanz' AND sena.name = 'Sena'
+CREATE
+(lanz)-[r: has_interlink_with]->(sena);
+
+MATCH
+(eunie:Character), (taion:Character)
+WHERE
+eunie.name = 'Eunie' AND taion.name = 'Taion'
+CREATE
+(eunie)-[r: has_interlink_with]->(taion);
+
+MATCH
+(queenM:Character), (queenN:Character)
+WHERE
+queenM.name = 'Queen Melia' AND queenN.name = 'Queen Nia'
+CREATE
+(queenM)-[r: is_friends_with]->(queenN);
+
+-----------------------------------------------------------------------------------------------------------------
+
+// Relationships: Character -> ... -> Nation
+
+MATCH
+(queenM:Character), (keves:Nation)
+WHERE
+queenM.name = 'Queen Melia' AND keves.name = 'Keves'
+CREATE
+(queenM)-[:rules_over]->(keves);
+
+MATCH
+(queenN:Character), (agnus:Nation)
+WHERE
+queenN.name = 'Queen Nia' AND agnus.name = 'Agnus'
+CREATE
+(queenN)-[function: rules_over]->(agnus);
+
+
+
+-----------------------------------------------------------------------------------------------------
+
+// Gebt alle Nodes aus
+MATCH (n) RETURN (n);
+
+// Gebt alle Nodes und ihre Beziehungen aus
+MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n, r, m;
+
+// Löscht alle Nodes und ihre Beziehungen (DELETEALL)
+MATCH (n) OPTIONAL MATCH (n)-[r]-(m)
+DELETE n, r, m;
