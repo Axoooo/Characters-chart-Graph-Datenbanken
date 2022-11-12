@@ -262,33 +262,44 @@ CREATE
 
 // SZENARIEN
 
-// SZENARIO 1:
+// SZENARIO 1: -Tim
 // Gib alle Characters aus die in Beziehung mit Mio steht, (interlink) haben.
 MATCH (:Character {name: 'Mio'})-[:has_interlink_with]->(n:Character)
 RETURN n.name;
-// 
+// Erklärung:
+// Sucht nach Character mit Namen Mio die eine Beziehung hat (interlink heisst)
+// Sucht im Node mit Label "Character" dessen Namen 'Mio' ist und sucht alle Beziehungen zu den Knoten "has_interlink_with" und gibt alle Character aus.
 
-// SZENARIO 2:
-// Suche nach einen aginien Healer
+
+// SZENARIO 2: - Robin
+// Suche nach einen agnian Healer
 // Suche nach Characters von der Nation Agnus und mit der Role "heal"
 
-// SZENARIO 3:
-// Suche nach einem Regieren Attacker
+// SZENARIO 3: - Tim
+// Suche nach einem regierenden Attacker
 // Suche nach Characters, die eine Nation regieren und hat auch die Attack Role haben.
 
-// SZENARIO 4:
+// SZENARIO 4: - Tim
 // Suche nach einem der Interlinked ist mit einem Defender
 //Suche nach Characters die Interlinked sind mit einem Character die eine Attack Defend haben
 
-// SZENARIO 5:
+// SZENARIO 5: - Tim
 // Suche nach einem der mit Jemand Interlinked ist, der Gleiche Role
 // Suche nach Characters die Interlinked sind mit Jemanden der die gleiche Rolle Hat.
 
 
-// SZENARIO Update:
-// Suche nach einem der mit Jemand Interlinked ist, der Gleiche Role
-// Suche nach Characters die Interlinked sind mit Jemanden der die gleiche Rolle Hat.
+// SZENARIO 6 (Update): -Robin
+// Aktualisieren den Knoten von "is_enemies_with" to "is_interlink_with" 
 
+// SZENARIO 7 (DELETE): - Robin
+//  DELETE the Character named "Mwamba"
+
+// BACKUP & RESTORE - Tim
+// code...
+
+// Update draw.io -Robin
+
+// Check README/Doku -Tim
 
 
 -----------------------------------------------------------------------------------------------------------------
