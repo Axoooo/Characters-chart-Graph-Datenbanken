@@ -2,21 +2,23 @@
 
 ## Beschreibung des Projects
 
-In this Project are we doing a Character-chart for characters in a game we like. We use the Graph-Datebase for showing realtions beetween the character. But also what role they have in a fight and for what Nation they fight for or even reign over.
+In this Project we are doing a Character-chart for characters from the game Xenoblade Chronicles 3. We use the graph database for showing relations beetween the character.
+But also what role they have in a fight and for what Nation they fight for or even rule over.
 
 ## Fazit
 
 Geben Sie uns eine 6 please, danke!
 
-It was something News for ous both, However the Instaltion worked great. But we offen debated hwo to to do something, because we both understood something else.
+It was something new for the both of us however the instalation worked great. But we often debated how to do something because we both understood something else.
 
 Robin:
 
-It was Confusing at first but it made more senes to more i worked with it.
+It was confusing at first but it made more sense the more I worked with it.
 
 Tim:
 
 I liked it way better than mongoDB and I'm kind of dissapointed that we didn't work more on neo4j / graph databases.
+However there was one thing that really made me mad about neo4j and it's making a backup because I didn't manage to do that. It was so much easier on the mongoDB.
 
 
 # Quelle
