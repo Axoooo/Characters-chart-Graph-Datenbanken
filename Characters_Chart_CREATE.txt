@@ -1,6 +1,7 @@
 
 Neo4j Anmeldung
 
+ssh ubuntu@54.234.121.236 -i "C:\Users\41754\OneDrive\Tim_Key.pem"
 cypher-shell
 username: neo4j
 password: 1234
@@ -29,7 +30,7 @@ CREATE
 
 Creation Relationships
 
-q
+
 MATCH
 (noah:Character), (mio:Character)
 WHERE
@@ -57,52 +58,6 @@ WHERE
 queenM.name = 'Queen Melia' AND queenN.name = 'Queen Nia'
 CREATE
 (queenM)-[r: is_friends_with]->(queenN);
-
------------------------------------------------------------------------------------------------------
-
-// Nation
-
-MATCH (keves:Nation),(agnus:Nation)
-WHERE keves.name = 'Keves' AND agnus.name = 'Agnus'
-RETURN keves.name, agnus.name;
-
-
-
-MATCH (keves), (agnus)
-DELETE keves, agnus;
-
------------------------------------------------------------------------------------------------------
-
-// Characters
-
-MATCH
-(queenM:Character),(noah:Character), (lanz:Character), (eunie:Character),
-(queenN:Character),(mio:Character), (sena:Character), (taion:Character)
-WHERE
-queenM.name = 'Queen Melia' AND noah.name = 'Noah' AND lanz.name = 'Lanz' AND eunie.name = 'Eunie' AND
-queenN.name = 'Queen Nia' AND mio.name = 'Mio' AND sena.name = 'Sena' AND taion.name = 'Taion'
-RETURN
-queenM.name, noah.name, lanz.name, eunie.name,
-queenN.name, mio.name, sena.name, taion.name;
-
-
-
-MATCH
-(queenM), (noah), (lanz), (eunie),
-(queenN), (mio), (sena), (taion)
-DELETE queenM, noah, lanz, eunie, queenN, mio, sena, taion;
-
------------------------------------------------------------------------------------------------------
-// Role
-
-MATCH
-(attack:Role), (defend:Role), (heal:Role)
-WHERE
-attack.name = 'Attacker' AND
-defend.name = 'Defender' AND
-heal.name = 'Healer'
-RETURN
-attack.name, defend.name, heal.name;
 
 -----------------------------------------------------------------------------------------------------------------
 
@@ -267,17 +222,32 @@ CREATE
 MATCH (:Character {name: 'Mio'})-[:has_interlink_with]->(n:Character)
 RETURN n.name;
 // Erklärung:
-// Sucht nach Character mit Namen Mio die eine Beziehung hat (interlink heisst)
-// Sucht im Node mit Label "Character" dessen Namen 'Mio' ist und sucht alle Beziehungen zu den Knoten "has_interlink_with" und gibt alle Character aus.
+// Sucht im Node mit Label "Character" dessen Namen 'Mio' ist und-
+// sucht alle Beziehungen zu den Knoten "has_interlink_with" und gibt alle Character aus.
 
 
-// SZENARIO 2: - Robin
-// Suche nach einen agnian Healer
-// Suche nach Characters von der Nation Agnus und mit der Role "heal"
+// SZENARIO 2: - Tim
+// Sucht nach Characters von der Nation Agnus und die Role "heal" haben.
+MATCH
+(n:Character)-[:fights_for]->(:Nation {name: 'Agnus'}),
+(n:Character)-[:is]->(:Role {name: 'Healer'})
+RETURN n.name;
+// Erklärung:
+// Sucht einen Character aus dem Node "Character" der in Beziehung steht mit Node mit Label "Nation" und Wert 'Agnus'
+// und Node mit Label "Role" und Wert Healer.
+
 
 // SZENARIO 3: - Tim
-// Suche nach einem regierenden Attacker
-// Suche nach Characters, die eine Nation regieren und hat auch die Attack Role haben.
+// Suche nach Characters, die eine Nation regieren und hat auch die Attack Role haben
+// und gebe NUR ihren Namen GROSS geschrieben aus.
+MATCH
+(n:Character)-[:is]->(:Role {name: 'Attacker'}),
+(n:Character)-[:rules_over]->(m:Nation)
+RETURN toUpper(substring(n.name, 6, 5)) AS Queens;
+// Erklärung:
+// Sucht nach einem Character aus dem Node "Character" der in Beziehung steht mit Knoten "is" zum Node "Role" mit Wert 'Attacker'
+// und Knoten "rules_over" zum Node "Nation" und gebe den Namen GROSS geschrieben ohne die ersten 6 Buchstaben
+// und nur den nächsten 5 Buchstaben in einer Liste "Queens" aus.
 
 // SZENARIO 4: - Tim
 // Suche nach einem der Interlinked ist mit einem Defender
@@ -289,7 +259,7 @@ RETURN n.name;
 
 
 // SZENARIO 6 (Update): -Robin
-// Aktualisieren den Knoten von "is_enemies_with" to "is_interlink_with" 
+// Aktualisieren den Knoten von "is_enemies_with" to "is_interlink_with"
 
 // SZENARIO 7 (DELETE): - Robin
 //  DELETE the Character named "Mwamba"
@@ -301,8 +271,8 @@ RETURN n.name;
 
 // Check README/Doku -Tim
 
-
 -----------------------------------------------------------------------------------------------------------------
+
 // Gebt alle Nodes aus
 MATCH (n) RETURN (n);
 
@@ -312,3 +282,46 @@ MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n, r, m;
 // Löscht alle Nodes und ihre Beziehungen (DELETE_ALL)
 MATCH (n) OPTIONAL MATCH (n)-[r]-(m)
 DELETE n, r, m;
+
+
+
+// Nation RETURN
+MATCH (keves:Nation),(agnus:Nation)
+WHERE keves.name = 'Keves' AND agnus.name = 'Agnus'
+RETURN keves.name, agnus.name;
+
+
+// Nation DELETE
+MATCH (keves), (agnus)
+DELETE keves, agnus;
+
+
+
+// Character RETURN
+MATCH
+(queenM:Character),(noah:Character), (lanz:Character), (eunie:Character),
+(queenN:Character),(mio:Character), (sena:Character), (taion:Character)
+WHERE
+queenM.name = 'Queen Melia' AND noah.name = 'Noah' AND lanz.name = 'Lanz' AND eunie.name = 'Eunie' AND
+queenN.name = 'Queen Nia' AND mio.name = 'Mio' AND sena.name = 'Sena' AND taion.name = 'Taion'
+RETURN
+queenM.name, noah.name, lanz.name, eunie.name,
+queenN.name, mio.name, sena.name, taion.name;
+
+
+// Character DELETE
+MATCH
+(queenM), (noah), (lanz), (eunie),
+(queenN), (mio), (sena), (taion)
+DELETE queenM, noah, lanz, eunie, queenN, mio, sena, taion;
+
+
+// Role RETURN
+MATCH
+(attack:Role), (defend:Role), (heal:Role)
+WHERE
+attack.name = 'Attacker' AND
+defend.name = 'Defender' AND
+heal.name = 'Healer'
+RETURN
+attack.name, defend.name, heal.name;
