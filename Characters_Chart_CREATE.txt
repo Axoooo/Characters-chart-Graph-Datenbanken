@@ -22,6 +22,7 @@ CREATE
 (:Character {name: 'Mio'}),
 (:Character {name: 'Sena'}),
 (:Character {name: 'Taion'}),
+(:Character {name: 'Mwamba'}),
 (:Role {name: 'Attacker'}),
 (:Role {name: 'Defender'}),
 (:Role {name: 'Healer'});
@@ -263,13 +264,33 @@ RETURN n.name;
 // SZENARIO 6 (Update): -Robin
 // Aktualisieren den Knoten von "is_enemies_with" to "is_interlink_with"
 
+MATCH
+(noah:Character), (mio:Character)
+WHERE
+noah.name = 'Noah' AND mio.name = 'Mio'
+CREATE
+(noah)-[r: has_interlink_with]->(mio);
+
+MATCH (:Character {name: 'Noah'}),-[r]-(:Character {name: 'Mio'}),
+SET r = "has_interlink_with";
+
+MATCH (a {name:"A"})-[r]-(b {name:"B"})
+SET r.P = "bar"
+
 // SZENARIO 7 (DELETE): - Robin
 //  DELETE the Character named "Mwamba"
+MATCH
+(Mwamba)
+DELETE Mwamba;
+MATCH
+(n:Character {name: 'Mwamba'})
+DELETE n;
+
+// Erklärung:
+// Sucht im Node mit Label "Character" dessen Namen 'Mwamba' ist und löscht ihn aus der Datenbank
 
 // BACKUP & RESTORE - Tim
 // code...
-
-// Update draw.io -Robin
 
 // Check README/Doku -Tim
 
@@ -327,3 +348,5 @@ defend.name = 'Defender' AND
 heal.name = 'Healer'
 RETURN
 attack.name, defend.name, heal.name;
+
+
