@@ -27,6 +27,8 @@ CREATE
 (:Role {name: 'Defender'}),
 (:Role {name: 'Healer'});
 
+MATCH (C:Character {name: 'Mio'})
+SET C.Age = "9th Term";
 -----------------------------------------------------------------------------------------------------------------
 
 // Relationships: Character -> ... -> Character
@@ -273,20 +275,12 @@ ORDER BY Character ASC;
 
 
 // SZENARIO 6 (Update): -Robin
-// Aktualisieren den Knoten von "is_enemies_with" to "is_interlink_with"
+// Aktualisieren das Alter von Mio
 
-MATCH
-(noah:Character), (mio:Character)
-WHERE
-noah.name = 'Noah' AND mio.name = 'Mio'
-CREATE
-(noah)-[r: has_interlink_with]->(mio);
+MATCH (C:Character {name: 'Mio'})
+SET C.Age = "10th Term"
+RETURN c
 
-MATCH (:Character {name: 'Noah'}),-[r]-(:Character {name: 'Mio'}),
-SET r = "has_interlink_with";
-
-MATCH (a {name:"A"})-[r]-(b {name:"B"})
-SET r.P = "bar"
 
 // SZENARIO 7 (DELETE): - Robin
 //  DELETE the Character named "Mwamba"
