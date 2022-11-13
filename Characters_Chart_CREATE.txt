@@ -1,10 +1,21 @@
+Neo4j Xenoblade Chronicles 3 Graph Database by Tim & Robin
 
-Neo4j Anmeldung
-
+Anmeldung:
 ssh ubuntu@54.87.28.242 -i "C:\Users\41754\OneDrive\Tim_Key.pem"
 cypher-shell
 username: neo4j
 password: 1234
+
+-----------------------------------------------------------------------------------------------------
+
+// Allgemein wichtige Befehle
+
+// Gebt alle Nodes und ihre Beziehungen aus
+MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n, r, m;
+
+// Löscht alle Nodes und ihre Beziehungen (DELETE_ALL)
+MATCH (n) OPTIONAL MATCH (n)-[r]-(m)
+DELETE n, r, m;
 
 -----------------------------------------------------------------------------------------------------
 
@@ -217,7 +228,7 @@ CREATE
 // SZENARIEN
 
 
-// SZENARIO 1: -Tim
+// SZENARIO 1:
 // Gib alle Characters aus die in Beziehung mit Mio steht, (interlink) haben.
 MATCH (:Character {name: 'Mio'})-[:has_interlink_with]->(n:Character)
 RETURN n.name;
@@ -226,7 +237,7 @@ RETURN n.name;
 // sucht alle Beziehungen zu den Knoten "has_interlink_with" und gibt alle Character aus.
 
 
-// SZENARIO 2: - Tim
+// SZENARIO 2:
 // Sucht nach Characters von der Nation Agnus und die Role "heal" haben.
 MATCH
 (n:Character)-[:fights_for]->(:Nation {name: 'Agnus'}),
@@ -237,7 +248,7 @@ RETURN n.name;
 // und Node mit Label "Role" und Wert Healer.
 
 
-// SZENARIO 3: - Tim
+// SZENARIO 3:
 // Suche nach Characters, die eine Nation regieren und hat auch die Attack Role haben
 // und gebe NUR ihren Namen GROSS geschrieben aus.
 MATCH
@@ -250,7 +261,7 @@ RETURN toUpper(substring(n.name, 6, 5)) AS Queens;
 // und nur den nächsten 5 Buchstaben in einer Liste "Queens" aus.
 
 
-// SZENARIO 4: - Tim
+// SZENARIO 4:
 // Suche nach Characters die Interlinked sind mit einem Character die, die Role Defend haben
 MATCH
 (n:Character)-[:has_interlink_with]->(m:Character),
@@ -261,7 +272,7 @@ RETURN n.name;
 // welche mit dem Node "Role" und dem Wert "Defender" in Beziehung stehen.
 
 
-// SZENARIO 5: - Tim
+// SZENARIO 5:
 // Gib alle Characters mit ihren Rollen, Nationen und Beziehungen in einer Liste alphabetisch, aufsteigend aus.
 MATCH
 (c:Character)-[:is]->(r:Role),
@@ -274,7 +285,7 @@ ORDER BY Character ASC;
 // und gib sie in einer Liste als Character, Role, Nation, Relationship alphabetisch und aufsteigend aus.
 
 
-// SZENARIO 6 (Update): -Robin
+// SZENARIO 6 (Update):
 // Aktualisieren das Alter von Mio
 
 MATCH (C:Character {name: 'Mio'})
@@ -282,7 +293,7 @@ SET C.Age = "10th Term"
 RETURN c
 
 
-// SZENARIO 7 (DELETE): - Robin
+// SZENARIO 7 (DELETE):
 //  DELETE the Character named "Mwamba"
 MATCH
 (Mwamba)
@@ -296,7 +307,7 @@ DELETE n;
 
 -----------------------------------------------------------------------------------------------------------------
 
-// BACKUP & RESTORE - Tim
+// BACKUP & RESTORE
 // Hat nicht geklappt, aber hier ist der Prozess aller Versuche dokumentiert:
 
 // backup Code
@@ -331,7 +342,6 @@ sudo nano /etc/systemd/user.conf
 DefaultLimitNOFILE=60000
 
 
-// Check README/Doku -Tim
 // Unter dieser File 2 neue Einträge machen
 sudo nano /etc/security/limits.conf
 neo4j  soft  nofile  40000
@@ -358,57 +368,3 @@ session required pam_limits.so
 // Did you mean: set-initial-password or set-default-admin?
 //
 // Und egal was, irgendwie konnte ich nicht herausfinden woran es lag. Ein mal habe ich etwas anderes bekommen
-
------------------------------------------------------------------------------------------------------------------
-
-// Gebt alle Nodes und ihre Beziehungen aus
-MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n, r, m;
-
-// Löscht alle Nodes und ihre Beziehungen (DELETE_ALL)
-MATCH (n) OPTIONAL MATCH (n)-[r]-(m)
-DELETE n, r, m;
-
-
-
-// Nation RETURN
-MATCH (keves:Nation),(agnus:Nation)
-WHERE keves.name = 'Keves' AND agnus.name = 'Agnus'
-RETURN keves.name, agnus.name;
-
-
-// Nation DELETE
-MATCH (keves), (agnus)
-DELETE keves, agnus;
-
-
-
-// Character RETURN
-MATCH
-(queenM:Character),(noah:Character), (lanz:Character), (eunie:Character),
-(queenN:Character),(mio:Character), (sena:Character), (taion:Character)
-WHERE
-queenM.name = 'Queen Melia' AND noah.name = 'Noah' AND lanz.name = 'Lanz' AND eunie.name = 'Eunie' AND
-queenN.name = 'Queen Nia' AND mio.name = 'Mio' AND sena.name = 'Sena' AND taion.name = 'Taion'
-RETURN
-queenM.name, noah.name, lanz.name, eunie.name,
-queenN.name, mio.name, sena.name, taion.name;
-
-
-// Character DELETE
-MATCH
-(queenM), (noah), (lanz), (eunie),
-(queenN), (mio), (sena), (taion)
-DELETE queenM, noah, lanz, eunie, queenN, mio, sena, taion;
-
-
-// Role RETURN
-MATCH
-(attack:Role), (defend:Role), (heal:Role)
-WHERE
-attack.name = 'Attacker' AND
-defend.name = 'Defender' AND
-heal.name = 'Healer'
-RETURN
-attack.name, defend.name, heal.name;
-
-
