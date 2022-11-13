@@ -1,7 +1,7 @@
 
 Neo4j Anmeldung
 
-ssh ubuntu@54.234.121.236 -i "C:\Users\41754\OneDrive\Tim_Key.pem"
+ssh ubuntu@54.87.28.242 -i "C:\Users\41754\OneDrive\Tim_Key.pem"
 cypher-shell
 username: neo4j
 password: 1234
@@ -214,6 +214,7 @@ CREATE
 
 // SZENARIEN
 
+
 // SZENARIO 1: -Tim
 // Gib alle Characters aus die in Beziehung mit Mio steht, (interlink) haben.
 MATCH (:Character {name: 'Mio'})-[:has_interlink_with]->(n:Character)
@@ -246,19 +247,29 @@ RETURN toUpper(substring(n.name, 6, 5)) AS Queens;
 // und Knoten "rules_over" zum Node "Nation" und gebe den Namen GROSS geschrieben ohne die ersten 6 Buchstaben
 // und nur den nächsten 5 Buchstaben in einer Liste "Queens" aus.
 
+
 // SZENARIO 4: - Tim
 // Suche nach Characters die Interlinked sind mit einem Character die, die Role Defend haben
 MATCH
-(n:Character)-[:has_interlink_with]->(:Character),
-MATCH
-(n:Character)-[:is]->(:Role {name: 'Defender'})
+(n:Character)-[:has_interlink_with]->(m:Character),
+(m:Character)-[:is]->(:Role {name: 'Defender'})
 RETURN n.name;
 // Erklärung:
+// Sucht nach Characters im Node "Character" die einen Beziehung "has_interlink_with" zu einem anderen Character stehen
+// welche mit dem Node "Role" und dem Wert "Defender" in Beziehung stehen.
 
 
 // SZENARIO 5: - Tim
-// Suche nach einem der mit Jemand Interlinked ist, der Gleiche Role
-// Suche nach Characters die Interlinked sind mit Jemanden der die gleiche Rolle Hat.
+// Gib alle Characters mit ihren Rollen, Nationen und Beziehungen in einer Liste alphabetisch, aufsteigend aus.
+MATCH
+(c:Character)-[:is]->(r:Role),
+(c:Character)-[]->(n:Nation),
+(c:Character)-[]->(i:Character)
+RETURN c.name AS Character, r.name AS Role, n.name AS Nation, i.name AS Relationship
+ORDER BY Character ASC;
+// Erklärung:
+// Suche nach allen Node "Character" und den Node ("Role", "Nation", "Character") mit denen sie eine Beziehung haben
+// und gib sie in einer Liste als Character, Role, Nation, Relationship alphabetisch und aufsteigend aus.
 
 
 // SZENARIO 6 (Update): -Robin
@@ -289,15 +300,72 @@ DELETE n;
 // Erklärung:
 // Sucht im Node mit Label "Character" dessen Namen 'Mwamba' ist und löscht ihn aus der Datenbank
 
-// BACKUP & RESTORE - Tim
-// code...
-
-// Check README/Doku -Tim
-
 -----------------------------------------------------------------------------------------------------------------
 
-// Gebt alle Nodes aus
-MATCH (n) RETURN (n);
+// BACKUP & RESTORE - Tim
+// Hat nicht geklappt, aber hier ist der Prozess aller Versuche dokumentiert:
+
+// backup Code
+neo4j-admin backup --backup-dir=/neo4j/backup --name=graphDB
+// Das hier wäre ungefähr der Code, man kann noch mehr Parameter einfügen, aber eigentlich hätte das schon reichen sollen.
+
+// PROBLEM 1
+// Jetzt hatt ich irgendwie das Problem, dass es von etwas zu wenig hatte.
+// Es kam als Fehlermeldung die ganze Zeit:
+//
+// WARNING: Max 1024 open files allowed, minimum of 40000 recommended. See the Neo4j manual.
+// Unmatched arguments from index 0: 'database', 'backup', 'neo4j/backup', 'neo4j'
+// Did you mean: set-initial-password or set-default-admin?
+//
+// Also habe ich recherchiert und folgendes gemacht...
+
+// Unter dieser File LimitNOFILE=60000 einfügen (einfach eine sehr hohe zahl)
+sudo systemctl edit neo4j.service
+[Service]
+LimitNOFILE=60000
+
+// Unter dieser File DefaultLimitNOFILE=60000 auskommentieren und auch eine hohe Zahl einfügen
+sudo nano /etc/systemd/system.conf
+[Manager]
+...
+DefaultLimitNOFILE=60000
+
+// Das gleiche auch unter dieser File
+sudo nano /etc/systemd/user.conf
+[Manager]
+#...
+DefaultLimitNOFILE=60000
+
+
+// Check README/Doku -Tim
+// Unter dieser File 2 neue Einträge machen
+sudo nano /etc/security/limits.conf
+neo4j  soft  nofile  40000
+neo4j  hard  nofile  40000
+
+// Hat irgendwie immernoch nicht geklappt nochmals 2 Einträge gemacht
+root  soft  nofile  40000
+root  hard  nofile  40000
+
+
+// Unter dieser File das hier einfügen
+sudo nano /etc/pam.d/common-session
+session required pam_limits.so
+
+// Das gleiche auch für dieses File
+sudo nano /etc/pam.d/common-session-noninteractive
+session required pam_limits.so
+
+// PROBLEM 2
+// Danach bekam ich nur noch diese Fehlermeldung
+//
+// neo4j-admin database backup neo4j/backup --name=graphDB neo4j
+// Unmatched arguments from index 0: 'database', 'backup', 'neo4j/backup', '--name=graphDB', 'neo4j'
+// Did you mean: set-initial-password or set-default-admin?
+//
+// Und egal was, irgendwie konnte ich nicht herausfinden woran es lag. Ein mal habe ich etwas anderes bekommen
+
+-----------------------------------------------------------------------------------------------------------------
 
 // Gebt alle Nodes und ihre Beziehungen aus
 MATCH (n) OPTIONAL MATCH (n)-[r]->(m) RETURN n, r, m;
