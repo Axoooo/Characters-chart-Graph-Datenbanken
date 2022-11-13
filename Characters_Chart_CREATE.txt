@@ -287,21 +287,17 @@ ORDER BY Character ASC;
 
 // SZENARIO 6 (Update):
 // Aktualisieren das Alter von Mio
-
-MATCH (C:Character {name: 'Mio'})
-SET C.Age = "10th Term"
-RETURN c
+MATCH (c:Character {name: 'Mio'})
+SET c.Age = "10th Term"
+RETURN (c);
+// Erklärung:
+// Sucht im Node "Character" mit dem Namen 'Mio' und Setzt ihr Alter von '9th Term' zu '10th Term' und gibt es aus.
 
 
 // SZENARIO 7 (DELETE):
-//  DELETE the Character named "Mwamba"
-MATCH
-(Mwamba)
-DELETE Mwamba;
-MATCH
-(n:Character {name: 'Mwamba'})
+// Löscht den Character namens "Mwamba"
+MATCH (n:Character {name: 'Mwamba'})
 DELETE n;
-
 // Erklärung:
 // Sucht im Node mit Label "Character" dessen Namen 'Mwamba' ist und löscht ihn aus der Datenbank
 
