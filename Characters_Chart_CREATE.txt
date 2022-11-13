@@ -26,39 +26,6 @@ CREATE
 (:Role {name: 'Defender'}),
 (:Role {name: 'Healer'});
 
------------------------------------------------------------------------------------------------------
-
-Creation Relationships
-
-
-MATCH
-(noah:Character), (mio:Character)
-WHERE
-noah.name = 'Noah' AND mio.name = 'Mio'
-CREATE
-(noah)-[r: has_interlink_with]->(mio);
-
-MATCH
-(lanz:Character), (sena:Character)
-WHERE
-lanz.name = 'Lanz' AND sena.name = 'Sena'
-CREATE
-(lanz)-[r: has_interlink_with]->(sena);
-
-MATCH
-(eunie:Character), (taion:Character)
-WHERE
-eunie.name = 'Eunie' AND taion.name = 'Taion'
-CREATE
-(eunie)-[r: has_interlink_with]->(taion);
-
-MATCH
-(queenM:Character), (queenN:Character)
-WHERE
-queenM.name = 'Queen Melia' AND queenN.name = 'Queen Nia'
-CREATE
-(queenM)-[r: is_friends_with]->(queenN);
-
 -----------------------------------------------------------------------------------------------------------------
 
 // Relationships: Character -> ... -> Character
@@ -85,11 +52,40 @@ CREATE
 (eunie)-[r: has_interlink_with]->(taion);
 
 MATCH
+(mio:Character), (noah:Character)
+WHERE
+mio.name = 'Mio' AND noah.name = 'Noah'
+CREATE
+(mio)-[r: has_interlink_with]->(noah);
+
+MATCH
+(sena:Character), (lanz:Character)
+WHERE
+sena.name = 'Sena' AND lanz.name = 'Lanz'
+CREATE
+(sena)-[r: has_interlink_with]->(lanz);
+
+MATCH
+(taion:Character), (eunie:Character)
+WHERE
+taion.name = 'Taion' AND eunie.name = 'Eunie'
+CREATE
+(taion)-[r: has_interlink_with]->(eunie);
+
+
+MATCH
 (queenM:Character), (queenN:Character)
 WHERE
 queenM.name = 'Queen Melia' AND queenN.name = 'Queen Nia'
 CREATE
 (queenM)-[r: is_friends_with]->(queenN);
+
+MATCH
+(queenN:Character), (queenM:Character)
+WHERE
+queenN.name = 'Queen Nia' AND queenM.name = 'Queen Melia'
+CREATE
+(queenN)-[r: is_friends_with]->(queenM);
 
 -----------------------------------------------------------------------------------------------------------------
 
@@ -179,18 +175,18 @@ CREATE
 (eunie)-[r: is]->(heal);
 
 MATCH
-(mio:Character), (attack:Role) (defend:Role)
+(mio:Character), (defend:Role)
 WHERE
 mio.name = 'Mio' AND defend.name = 'Defender'
 CREATE
-(mio)-[r: is]->(attack);
+(mio)-[r: is]->(defend);
 
 MATCH
-(sena:Character), (defend:Role)
+(sena:Character), (attack:Role)
 WHERE
 sena.name = 'Sena' AND attack.name = 'Attacker'
 CREATE
-(sena)-[r: is]->(defend);
+(sena)-[r: is]->(attack);
 
 MATCH
 (taion:Character), (heal:Role)
@@ -250,8 +246,14 @@ RETURN toUpper(substring(n.name, 6, 5)) AS Queens;
 // und nur den nächsten 5 Buchstaben in einer Liste "Queens" aus.
 
 // SZENARIO 4: - Tim
-// Suche nach einem der Interlinked ist mit einem Defender
-//Suche nach Characters die Interlinked sind mit einem Character die eine Attack Defend haben
+// Suche nach Characters die Interlinked sind mit einem Character die, die Role Defend haben
+MATCH
+(n:Character)-[:has_interlink_with]->(:Character),
+MATCH
+(n:Character)-[:is]->(:Role {name: 'Defender'})
+RETURN n.name;
+// Erklärung:
+
 
 // SZENARIO 5: - Tim
 // Suche nach einem der mit Jemand Interlinked ist, der Gleiche Role
